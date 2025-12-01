@@ -30,7 +30,8 @@ type RepoExport struct {
 }
 
 var (
-	exportRecursive bool
+	exportRecursive   bool
+	exportIncludeDeps bool
 )
 
 // NewExportCmd creates the export command
@@ -53,6 +54,7 @@ Examples:
 
 	cmd.Flags().BoolVarP(&exportRecursive, "recursive", "r", false, "Recursively scan subdirectories for git repos")
 	cmd.Flags().String("path", ".", "Path to scan")
+	cmd.Flags().BoolVar(&exportIncludeDeps, "include-deps", false, "Include files in node_modules, vendor, etc.")
 
 	return cmd
 }
@@ -71,7 +73,7 @@ func runExport(cmd *cobra.Command, args []string) error {
 	// Collect files to export
 	var repos []RepoExport
 	s := scanner.NewScanner()
-	s.ExcludeDeps = true
+	s.ExcludeDeps = !exportIncludeDeps
 
 	if exportRecursive {
 		repos, err = collectReposRecursive(s, absPath)
