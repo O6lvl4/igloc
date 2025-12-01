@@ -1,5 +1,7 @@
 # igloc
 
+English | [日本語](README.ja.md)
+
 Scan your local machine and discover files ignored by `.gitignore`.
 
 **igloc** helps you find secrets and local configurations that won't be committed to version control. Useful for auditing your projects or setting up a new machine.
