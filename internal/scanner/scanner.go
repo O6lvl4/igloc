@@ -6,6 +6,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/O6lvl4/igloc/internal/config"
 )
 
 // IgnoredFile represents a file that is ignored by .gitignore
@@ -209,9 +211,33 @@ func isSecretFile(path string, category string) bool {
 	return false
 }
 
-// isInDepsDir checks if a path is inside a dependency directory
-func isInDepsDir(path string) bool {
-	depsDirs := []string{
+// cachedDepsPatterns caches patterns loaded from config
+var cachedDepsPatterns []string
+
+// loadDepsPatterns loads patterns from config or uses defaults
+func loadDepsPatterns() []string {
+	if cachedDepsPatterns != nil {
+		return cachedDepsPatterns
+	}
+
+	// Try to load from config
+	cfg, err := config.LoadPatterns()
+	if err == nil && cfg != nil {
+		patterns := cfg.GetAllDepsDirs()
+		if len(patterns) > 0 {
+			cachedDepsPatterns = patterns
+			return cachedDepsPatterns
+		}
+	}
+
+	// Fall back to defaults
+	cachedDepsPatterns = defaultDepsDirs()
+	return cachedDepsPatterns
+}
+
+// defaultDepsDirs returns built-in default patterns
+func defaultDepsDirs() []string {
+	return []string{
 		// JavaScript/Node.js
 		"node_modules/",
 
@@ -220,7 +246,6 @@ func isInDepsDir(path string) bool {
 		"venv/",
 		"__pycache__/",
 		".eggs/",
-		"*.egg-info/",
 		".tox/",
 		".nox/",
 		"site-packages/",
@@ -230,7 +255,7 @@ func isInDepsDir(path string) bool {
 		".bundle/",
 
 		// Go
-		"vendor/", // also PHP
+		"vendor/",
 		"pkg/mod/",
 
 		// Rust
@@ -239,7 +264,7 @@ func isInDepsDir(path string) bool {
 		// Java/Kotlin
 		".gradle/",
 		".m2/",
-		"build/", // Gradle output
+		"build/",
 
 		// .NET
 		"packages/",
@@ -262,8 +287,23 @@ func isInDepsDir(path string) bool {
 		".stack-work/",
 		"dist-newstyle/",
 	}
+}
+
+// isInDepsDir checks if a path is inside a dependency directory
+func isInDepsDir(path string) bool {
+	depsDirs := loadDepsPatterns()
 	for _, dir := range depsDirs {
-		if strings.HasPrefix(path, dir) || strings.Contains(path, "/"+dir) {
+		// Handle patterns with trailing slash
+		pattern := strings.TrimSuffix(dir, "/")
+		if pattern == "" {
+			continue
+		}
+
+		// Check if path starts with or contains the pattern
+		if strings.HasPrefix(path, pattern+"/") ||
+		   strings.HasPrefix(path, pattern) ||
+		   strings.Contains(path, "/"+pattern+"/") ||
+		   strings.Contains(path, "/"+pattern) {
 			return true
 		}
 	}

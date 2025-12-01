@@ -28,6 +28,7 @@ Use cases:
 	}
 
 	rootCmd.AddCommand(cli.NewScanCmd())
+	rootCmd.AddCommand(cli.NewSyncCmd())
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
