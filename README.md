@@ -52,6 +52,41 @@ igloc sync
 igloc sync --list
 ```
 
+### Export/Import secrets
+
+Migrate secrets between machines:
+
+```bash
+# Export secrets to a zip file
+igloc export backup.zip
+
+# Export from specific directory
+igloc export --path ~/projects/my-app backup.zip
+
+# Export all repos recursively
+igloc export -r ~/projects backup.zip
+
+# Import on another machine
+igloc import backup.zip
+
+# Preview what will be imported
+igloc import --dry-run backup.zip
+
+# Import without confirmation
+igloc import --yes backup.zip
+```
+
+Archive structure:
+```
+backup.zip
+├── manifest.yaml      # Metadata and file mappings
+├── patterns.yaml      # Synced patterns config
+└── files/
+    └── my-app/
+        ├── .env
+        └── config/.env.local
+```
+
 ## Example Output
 
 ```
