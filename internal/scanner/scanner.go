@@ -212,14 +212,55 @@ func isSecretFile(path string, category string) bool {
 // isInDepsDir checks if a path is inside a dependency directory
 func isInDepsDir(path string) bool {
 	depsDirs := []string{
+		// JavaScript/Node.js
 		"node_modules/",
-		"vendor/",
+
+		// Python
 		".venv/",
 		"venv/",
 		"__pycache__/",
+		".eggs/",
+		"*.egg-info/",
+		".tox/",
+		".nox/",
+		"site-packages/",
+
+		// Ruby
+		"vendor/bundle/",
+		".bundle/",
+
+		// Go
+		"vendor/", // also PHP
+		"pkg/mod/",
+
+		// Rust
+		"target/",
+
+		// Java/Kotlin
 		".gradle/",
-		"target/", // Rust/Maven
-		"Pods/",   // iOS
+		".m2/",
+		"build/", // Gradle output
+
+		// .NET
+		"packages/",
+		"bin/",
+		"obj/",
+
+		// iOS/macOS
+		"Pods/",
+		"Carthage/",
+
+		// Dart/Flutter
+		".dart_tool/",
+		".pub-cache/",
+
+		// Elixir
+		"deps/",
+		"_build/",
+
+		// Haskell
+		".stack-work/",
+		"dist-newstyle/",
 	}
 	for _, dir := range depsDirs {
 		if strings.HasPrefix(path, dir) || strings.Contains(path, "/"+dir) {
