@@ -1,0 +1,16 @@
+# Binary (root only)
+/igloc
+/igloc.exe
+
+# Build
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Test
+coverage.out
